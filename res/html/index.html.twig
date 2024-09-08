@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page {{ controller_name }} | {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col">
+        <h1 class="text-primary">Cela marche !</h1>
+        <div class="btn-group" role="group" aria-label="Test des boutons colorés">
+            <button class="btn btn-primary">
+                <twig:ux:icon name="bi:1-circle" height="24" width="24"/>
+            </button>
+            <button class="btn btn-secondary">
+                <twig:ux:icon name="bi:2-circle" height="24" width="24"/>
+            </button>
+            <button class="btn btn-success">
+                <twig:ux:icon name="bi:3-circle" height="24" width="24"/>
+            </button>
+            <button class="btn btn-danger">
+                <twig:ux:icon name="bi:4-circle" height="24" width="24"/>
+            </button>
+            <button class="btn btn-warning">
+                <twig:ux:icon name="bi:5-circle" height="24" width="24"/>
+            </button>
+            <button class="btn btn-info">
+                <twig:ux:icon name="bi:6-circle" height="24" width="24"/>
+            </button>
+            <button class="btn btn-dark">
+                <twig:ux:icon name="bi:7-circle" height="24" width="24"/>
+            </button>
+            <button class="btn btn-light">
+                <twig:ux:icon name="bi:8-circle" height="24" width="24"/>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

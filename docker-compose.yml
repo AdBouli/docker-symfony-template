@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  application_service:
+    build:
+      context: docker/php
+      args:
+        PHP_VERSION: ${APP_PHP_VERSION}
+        USERNAME: ${APP_USERNAME}
+        WORK_DIR: ${APP_WORK_DIR}
+    restart: always
+    depends_on:
+      - database_service
+    hostname: ${APP_HOSTNAME}
+    expose:
+      - ${APP_PORT_NUMBER}
+    ports:
+      - ${LOCAL_APP_PORT_NUMBER}:${APP_PORT_NUMBER}
+    networks:
+      - symfony_app_network
+    volumes:
+      - ./app:${APP_WORK_DIR}
+
+  database_service:
+    build:
+      context: docker/mariadb
+      args:
+        MARIADB_VERSION: ${DB_MARIADB_VERSION}
+        BACKUP_DIR: ${DB_BACKUP_DIR}
+    restart: always
+    hostname: ${DB_HOSTNAME}
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWD}
+      MARIADB_USER: ${DB_USERNAME} 
+      MARIADB_PASSWORD: ${DB_USER_PASSWD}
+      MARIADB_DATABASE: ${DB_DATABASE_NAME}
+    expose:
+      - ${DB_PORT_NUMBER}
+    networks:
+      - symfony_app_network
+    volumes:
+      - symfony_app_database:/var/lib/mysql
+      - ./backup:${DB_BACKUP_DIR}
+
+  admin_service:
+    build:
+      context: docker/phpmyadmin
+      args:
+        PMA_VERSION: ${ADM_PMA_VERSION}
+    restart: always
+    depends_on:
+      - database_service
+    hostname: ${ADM_HOSTNAME}
+    environment:
+      PMA_HOST: ${DB_HOSTNAME}
+      PMA_PORT: ${ADM_DB_PORT_NUMBER}
+      APACHE_PORT: ${ADM_PORT_NUMBER}
+    expose:
+      - ${ADM_PORT_NUMBER}
+    ports:
+      - ${LOCAL_ADM_PORT_NUMBER}:${ADM_PORT_NUMBER}
+    networks:
+      - symfony_app_network
+
+networks:
+  symfony_app_network:
+    driver: bridge
+
+volumes:
+  symfony_app_database:
+    driver: local
