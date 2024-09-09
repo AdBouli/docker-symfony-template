@@ -26,10 +26,8 @@ make sf_test
 ```
 
 ## TODO
-* db backup & restoration (physique)
-* module xdebug
-* prod container apache-phpfpm
+* db backup + incrementals & restoration (physique)
+* container production apache-phpfpm
 
 ## Auteurs
 * Adrien Boulineau <adbouli@vivaldi.net>
-  

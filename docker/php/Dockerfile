@@ -38,11 +38,13 @@ RUN apt-get update && apt-get -y upgrade \
     && docker-php-ext-install pdo \
     && docker-php-ext-configure pdo_mysql \
     && docker-php-ext-install pdo_mysql \
+    && pecl install apcu-5.1.23 \
+    && docker-php-ext-enable apcu \
     && pecl install xdebug-3.3.2 \
     && docker-php-ext-enable xdebug \
     && echo 'xdebug.mode = debug' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo 'xdebug.client_host = host.docker.internal' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo 'short_open_tag = Off' > /usr/local/etc/php/conf.d/short_open_tag_off.ini \
+    && echo 'short_open_tag = Off' > /usr/local/etc/php/conf.d/php-short-open-tag-off.ini \
     && curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash \
     && apt-get -y install symfony-cli \
     # && apt-get -y install nodejs npm \
