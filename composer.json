@@ -1,0 +1,11 @@
+{
+    "name": "adbouli/docker-symfony-template",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Adrien Boulineau",
+            "email": "adbouli@vivaldi.net"
+        }
+    ],
+    "require": {}
+}

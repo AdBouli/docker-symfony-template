@@ -13,7 +13,7 @@ make up
 make sf_init
 # Configuration de Symfony à la base de données
 make sf_db_cfg
-# Configuration de Bootstrrap CSS et Sass dans Symfony (optionnel)
+# Configuration de Bootstrap CSS et Sass dans Symfony (optionnel)
 make sf_bs_sass_cfg
 ```
 
