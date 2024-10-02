@@ -1,7 +1,7 @@
 # Modèle d'application Symfony avec Docker
 
 ## Pré-requis
-docker, docker-compose, sed.
+make, docker, docker-compose, sed, git.
 
 ## Configuration
 Modifier le fichier *.env* à la racine du répertoire.

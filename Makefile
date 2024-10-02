@@ -189,4 +189,28 @@ sf_entity: ## Créé ou modifie une entité Symfony [name='...']
 	@$(eval name ?= )
 	@$(CONSOLE) make:entity $(name)
 
+##
+## *** Git *** ---------------------------------- *
+##
+
+git_clone: ## Clone un dépot git dans le répertoire applicatif (url='...')
+	@$(eval url ?= )
+	@rm ./app/.gitkeep
+	@git clone $(url) ./app/
+	@touch ./app/.gitkeep
+
+git_status: ## Affiche l'état du dépot local
+	@cd ./app/ && git status
+
+git_commit: ## Ajoute les fichiers modifiés et les enregistre au dépot local (msg='...')
+	@$(eval msg ?= )
+	@cd ./app/ && git add .
+	@cd ./app/ && git commit -m "$(msg)"
+
+git_pull: ## Met à jour le dépot local
+	@cd ./app/ && git pull
+
+git_push: ## Met à jour le dépot distant
+	@cd ./app/ && git push
+
 ## 
