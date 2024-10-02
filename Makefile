@@ -9,10 +9,10 @@
 
 # Généralités
 .DEFAULT_GOAL = help
-.PHONY        : build fast_build up down ls ps top log \
-				app_sh app_root_sh app_exec db_sh db_exec db_log db_backup db_restore \
-				sf_init sf_start sf_stop sf_logs sf_dump sf_to_dev sf_to_prod sf_db_cfg sf_db_migrate sf_bs_sass_cfg sf_test \
-				sf_sass_build sf_sass_watch sf_dbg_router sf_controller sf_entity sf_compile_assets sf_dbg_assets
+.PHONY        : install build full_build up down ls ps top log \
+				app_sh app_exec db_sh db_exec db_log db_backup db_restore \
+				sf_init sf_start sf_stop sf_logs sf_dump sf_to_dev sf_to_prod sf_db_cfg sf_db_migrate \
+				sf_bs_sass_cfg sf_compile_assets sf_dbg_assets sf_dbg_router sf_controller sf_entity
 ENV_FILES     = .env
 -include $(ENV_FILES)
 
@@ -32,21 +32,23 @@ help: ## Affiche ce message d'aide
 ## *** Général *** ------------------------------ *
 ##
 
-build:	## Construit les images des services [srv='...']
-	@$(eval srv ?=)
-	@$(DC) build --pull --no-cache $(srv)
+install: build up sf_init sf_db_cfg sf_bs_sass_cfg ## Construit les images Docker, installe et configure Symfony avec Sass et Bootstrap
 
-fast_build:	## Construit les images des services [srv='...'] (rapidement) 
+build:	## Construit les images des services [srv='...']
 	@$(eval srv ?=)
 	@$(DC) build $(srv)
 
+full_build:	## Construit les images des services [srv='...'] (sans utiliser le cache)
+	@$(eval srv ?=)
+	@$(DC) build --pull --no-cache $(srv)
+
 up: ## Lance les services [srv='...']
 	@$(eval srv ?=)
-	@$(DC) up --detach  $(srv)
+	@$(DC) up --detach $(srv)
 
 down: ## Arrête les services [srv='...']
 	@$(eval srv ?=)
-	@$(DC) down --remove-orphans  $(srv)
+	@$(DC) down --remove-orphans $(srv)
 
 ls: ## Affiche le nom des services
 	@$(DC) ps --services
@@ -118,13 +120,13 @@ db_restore: ## Lance une restauration de la base de données : backup=YYYYmmdd-H
 ##
 
 sf_init: ## Initialise le projet Symfony
-	@$(APP_CONT) rm .gitkeep
+	@rm ./app/.gitkeep
 	@$(SYMFONY) new $(PROJECT_NAME) --webapp --version="6.4.*" --php="${APP_PHP_VERSION}" --no-git --dir="."
-	@$(APP_CONT) touch .gitkeep
+	@touch ./app/.gitkeep
 
 sf_start: ## Lance le serveur web local de Symfony
-	@$(SYMFONY) server:start --daemon --no-tls --port="$(APP_PORT_NUMBER)" \
-	&& echo "\n\033[1;3;35m-> Accessible localement via : \
+	@$(SYMFONY) server:start --daemon --no-tls --port="$(APP_PORT_NUMBER)"
+	@echo "\n\033[1;3;35m-> Accessible localement via : \
 	http://$$(hostname -I | cut -f1 -d ' '):$(LOCAL_APP_PORT_NUMBER)\033[0m\n"
 
 sf_stop: ## Arrête le serveur web local de Symfony
@@ -137,60 +139,54 @@ sf_dump: ## Affiche le flux de debug du serveur web local de Symfony
 	@$(CONSOLE) server:dump
 
 sf_to_dev: ## Configure Symfony en environnement de développement
-	@$(APP_CONT) sed --in-place 's/^APP_ENV=prod/APP_ENV=dev/' .env
+	@rm -rf ./app/public/assets/
+	@sed --in-place 's/^APP_ENV=prod/APP_ENV=dev/' ./app/.env
 
-sf_to_prod: ## Configure Symfony en environnement de production
-	@$(APP_CONT) sed --in-place 's/^APP_ENV=dev/APP_ENV=prod/' .env
+sf_to_prod: sf_compile_assets ## Configure Symfony en environnement de production
+	@sed --in-place 's/^APP_ENV=dev/APP_ENV=prod/' ./app/.env
 
 sf_db_cfg: ## Configure Symfony pour l'accès à la base de données de l'application
-	@$(APP_CONT) sed --in-place 's~^DATABASE_URL=.*~# &\
+	@sed --in-place 's~^DATABASE_URL=.*~# &\
 	DATABASE_URL=\"mysql://$(DB_USERNAME):$(DB_USER_PASSWD)@$(DB_HOSTNAME):$(DB_PORT_NUMBER)/$(DB_DATABASE_NAME)'\
-	'?serverVersion=$(DB_MARIADB_VERSION)-MariaDB\&charset=$(DB_MARIADB_CHARSET)\"~' .env
+	'?serverVersion=$(DB_MARIADB_VERSION)-MariaDB\&charset=$(DB_MARIADB_CHARSET)\"~' ./app/.env
 
-sf_db_migrate: ## Créer et effectue une migration de la dase de données
+sf_db_migrate: ## Créé et effectue une migration de la dase de données
 	@$(CONSOLE) make:migration
 	@$(CONSOLE) doctrine:migrations:migrate
 
-sf_bs_sass_cfg: ## Installe et configure Sass avec Boostrap CSS à l'application
-	@$(COMPOSER) require symfonycasts/sass-bundle:^0.7 twbs/bootstrap:^5.3 symfony/ux-icons symfony/ux-twig-component
-	@$(APP_CONT) bash -c "echo '@import \"bootstrap-custom\";' > assets/styles/app.scss"
-	@cp ./res/scss/* ./app/assets/styles/
-	@$(APP_CONT) sed --in-place '/block stylesheets/a \ \ \ \ \ \ \ \ \ \ \ \ '\
-	'<link rel="stylesheet" href="{{ asset('"'"'styles/app.scss'"'"') }}">' templates/base.html.twig
-	@$(CONSOLE) sass:build
-
-sf_test: ## Créer une page de test [ctrl='nom']
-	@$(eval ctrl ?= test)
-	@$(CONSOLE) make:controller $(ctrl)
-	@cp --force ./res/scss/* ./app/assets/styles/
-	@cp --force ./res/html/base.html.twig ./app/templates/base.html.twig
-	@cp --force ./res/html/index.html.twig ./app/templates/$(ctrl)/index.html.twig
-	@$(CONSOLE) sass:build
-	@echo "\n\033[1;3;35m-> Accessible localement via : \
-	http://$$(hostname -I | cut -f1 -d ' '):$(LOCAL_APP_PORT_NUMBER)/$(ctrl)\033[0m\n"
-
-sf_sass_build: ## Construit les assets Sass
-	@$(CONSOLE) sass:build
-
-sf_sass_watch: ## Construit automatiquement les assets Sass à chaque changement
-	@$(CONSOLE) sass:build --watch --verbose
-
-sf_dbg_router: ## Affiche les routes de l'application
-	@$(CONSOLE) debug:router --env=prod
-
-sf_controller: ## Génère un nouveau contrôleur Symfony [ctrl='...']
-	@$(eval ctrl ?= )
-	@$(CONSOLE) make:controller $(ctrl)
-
-sf_entity: ## Créer ou modifie une entité Symfony [ent='...']
-	@$(eval ent ?= )
-	@$(CONSOLE) make:entity $(ent)
+sf_bs_sass_cfg: ## Installe et configure Sass avec Boostrap à l'application
+	@$(SYMFONY) server:stop
+	@$(CONSOLE) importmap:require bootstrap@^$(APP_BOOTSTRAP_VERSION)
+	@sed --in-place "/app.css/a import\ 'bootstrap';" ./app/assets/app.js
+	@$(COMPOSER) require symfonycasts/sass-bundle:^0.7 twbs/bootstrap:^$(APP_BOOTSTRAP_VERSION) \
+	symfony/ux-icons symfony/ux-twig-component
+	@$(CONSOLE) make:controller BootstrapTest
+	@mv ./app/templates/base.html.twig ./app/templates/base.html.twig.old
+	@cp --force ./resources/scss/* ./app/assets/styles/
+	@cp --force ./resources/js/* ./app/assets/controllers/
+	@cp --force ./resources/html/base.html.twig ./app/templates/base.html.twig
+	@cp --force ./resources/html/index.html.twig ./app/templates/bootstrap_test/index.html.twig
+	@cp --force ./resources/config/asset_mapper.yaml ./app/config/packages/asset_mapper.yaml
+	@cp --force ./resources/config/.symfony.local.yaml ./app/
+	@$(SYMFONY) server:start --daemon --no-tls --port="$(APP_PORT_NUMBER)"
+	@echo "\n\033[1;3;35m-> Page de test accessible localement via : \
+	http://$$(hostname -I | cut -f1 -d ' '):$(LOCAL_APP_PORT_NUMBER)/bootstrap/test\033[0m\n"
 
 sf_compile_assets: ## Compile les assets pour la mise en production
-	@$(CONSOLE) sass:build
 	@$(CONSOLE) asset-map:compile
 
 sf_dbg_assets: ## Affiche les assets de l'application
 	@$(CONSOLE) debug:asset-map
+
+sf_dbg_router: ## Affiche les routes de l'application
+	@$(CONSOLE) debug:router --env=prod
+
+sf_controller: ## Génère un nouveau contrôleur Symfony [name='...']
+	@$(eval name ?= )
+	@$(CONSOLE) make:controller $(name)
+
+sf_entity: ## Créé ou modifie une entité Symfony [name='...']
+	@$(eval name ?= )
+	@$(CONSOLE) make:entity $(name)
 
 ## 

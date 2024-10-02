@@ -1,28 +1,19 @@
 # Modèle d'application Symfony avec Docker
 
+## Pré-requis
+docker, docker-compose, sed.
+
 ## Configuration
 Modifier le fichier *.env* à la racine du répertoire.
 
 ## Installation
 ```sh
-# Constructiuon des images Docker
-make build
-# Initialisation des conteneurs
-make up
-# Initialisation du projet Symfony
-make sf_init
-# Configuration de Symfony à la base de données
-make sf_db_cfg
-# Configuration de Bootstrap CSS et Sass dans Symfony (optionnel)
-make sf_bs_sass_cfg
+make install
 ```
 
-## Utilisation
+## Aide
 ```sh
-# Lancement du serveur web de Symfony
-make sf_start
-# Création d'une page de test (optionnel)
-make sf_test
+make help
 ```
 
 ## TODO

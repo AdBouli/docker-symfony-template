@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page {{ controller_name }} | {{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="row py-3">
+    <div class="col-12 mb-2">
+        <h1 class="text-primary">Si ce titre est coloré, tout s'est sûrement bien déroulé.</h1>
+    </div>
+
+    <div class="col-lg-4">
+        <h3 class="text-secondary">Test des couleurs :</h3>
+        <ul class="list-group">
+            <li class="list-group-item bg-primary">primary</li>
+            <li class="list-group-item bg-secondary">secondary</li>
+            <li class="list-group-item bg-success">success</li>
+            <li class="list-group-item bg-danger">danger</li>
+            <li class="list-group-item bg-warning">warning</li>
+            <li class="list-group-item bg-info">info</li>
+            <li class="list-group-item bg-light">light</li>
+            <li class="list-group-item bg-dark">dark</li>
+        </ul>
+    </div>
+
+    <div class="col-lg-4">
+        <h3 class="text-secondary">Test des icones :</h3>
+        <twig:ux:icon name="bi:emoji-smile-fill" class="text-primary" height="128" width="128"/>
+        <twig:ux:icon name="bi:arrow-through-heart-fill" class="text-danger" height="128" width="128"/>
+        <twig:ux:icon name="mdi:success" class="text-success" height="128" width="128"/>
+    </div>
+
+    <div class="col-lg-4">
+        <h3 class="text-secondary">Test du JavaScript :</h3>
+        <button type="button" class="btn btn-lg btn-primary"
+            data-bs-toggle="popover" data-bs-content="Ça marche !"
+        >
+            Tester
+        </button>
+    </div>
+</div>
+{% endblock %}
