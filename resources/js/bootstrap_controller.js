@@ -1,3 +1,6 @@
+// @file bootstrap_controller.js
+// @author Adrien Boulineau <adbouli@vivaldi.net>
+
 import { Controller } from '@hotwired/stimulus';
 import { Popover } from 'bootstrap';
 

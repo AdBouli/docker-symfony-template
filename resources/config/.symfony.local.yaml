@@ -1,3 +1,6 @@
+# @file .symfony.local.yaml
+# @author Adrien Boulineau <adbouli@vivaldi.net>
+
 workers:
     sass:
         cmd: ['symfony', 'console', 'sass:build', '--watch', '--verbose']

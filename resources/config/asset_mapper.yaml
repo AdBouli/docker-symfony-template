@@ -1,6 +1,8 @@
+# @file asset_mapper.yaml
+# @author Adrien Boulineau <adbouli@vivaldi.net>
+
 framework:
     asset_mapper:
-        # The paths to make available to the asset mapper.
         paths:
             - assets/
         excluded_patterns:

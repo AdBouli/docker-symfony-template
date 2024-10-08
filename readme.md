@@ -1,7 +1,11 @@
+<!-- @file readme.md -->
+<!-- @author Adrien Boulineau <adbouli@vivaldi.net> -->
+
+
 # Modèle d'application Symfony avec Docker
 
-## Pré-requis
-make, docker, docker-compose, sed, git.
+## Prérequis
+make, docker-compose, sed, git.
 
 ## Configuration
 Modifier le fichier *.env* à la racine du répertoire.
@@ -20,5 +24,5 @@ make help
 * db backup + incrementals & restoration (physique)
 * container production apache-phpfpm
 
-## Auteurs
+## Auteur
 * Adrien Boulineau <adbouli@vivaldi.net>

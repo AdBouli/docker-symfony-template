@@ -1,3 +1,6 @@
+# @file docker-compose.yaml
+# @author Adrien Boulineau <adbouli@vivaldi.net>
+
 version: '3.8'
 
 services:

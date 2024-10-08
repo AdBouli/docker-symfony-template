@@ -1,4 +1,5 @@
-# PHP Dockerfile
+# @file php/Dockerfile
+# @author Adrien Boulineau <adbouli@vivaldi.net>
 
 # Variables syntaxiques
 # syntax=docker/dockerfile:1
