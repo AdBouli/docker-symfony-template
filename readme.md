@@ -5,7 +5,7 @@
 # Modèle d'application Symfony avec Docker
 
 ## Prérequis
-make, docker-compose, sed, git.
+make, docker-compose, grep, sed, git.
 
 ## Configuration
 ```sh
