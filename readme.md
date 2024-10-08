@@ -8,7 +8,9 @@
 make, docker-compose, sed, git.
 
 ## Configuration
-Modifier le fichier *.env* à la racine du répertoire.
+```sh
+make config
+```
 
 ## Installation
 ```sh
