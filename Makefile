@@ -17,8 +17,8 @@
 				app_sh app_exec db_sh db_exec db_log db_backup db_restore \
 				sf_init sf_start sf_stop sf_logs sf_dump sf_to_dev sf_to_prod sf_db_cfg sf_db_migrate \
 				sf_sass_cfg sf_compile_assets sf_dbg_assets sf_dbg_router sf_controller sf_entity
-ENV_FILES     = .env .env.local
--include $(ENV_FILES)
+ENV_FILE = .env
+-include $(ENV_FILE)
 
 # Executables
 DC        = docker-compose
@@ -35,7 +35,7 @@ RESOURCES_DIR = ./resources
 BINARIES_DIR  = ./bin
 
 help: ## Affiche ce message d'aide
-	@grep --extended-regexp '(^[a-zA-Z0-9\./_-]+:.*?##.*$$)|(^##)' $(filter-out $(ENV_FILES), $(MAKEFILE_LIST)) | \
+	@grep --extended-regexp '(^[a-zA-Z0-9\./_-]+:.*?##.*$$)|(^##)' $(filter-out $(ENV_FILE), $(MAKEFILE_LIST)) | \
 	awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed --expression 's/\[32m## /[33m/'
 
 ##

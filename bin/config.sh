@@ -3,9 +3,8 @@
 # @file config.sh
 # @author Adrien Boulineau <adbouli@vivaldi.net>
 
-# Nom des fichiers d'environnement
-default_env_file=".env"
-local_env_file=".env.local"
+# Nom du fichier d'environnement
+env_file=".env"
 
 # Fonction pour demander une valeur à l'utilisateur
 function prompt_for_value {
@@ -26,39 +25,30 @@ variables=(
     "DB_USER_PASSWD"        "Mot de passe utilisateur de la base de données"
 )
 
-touch $local_env_file
-
-echo -e "\nConfiguration du fichier $local_env_file.\n"
+echo -e "\nConfiguration du fichier d'environnement.\n"
 echo -e "Faites <entrer> pour garder la valeur entre crochet.\n"
 
 {
     # Boucle pour chaque variable à configurer
     for ((i=0; i<${#variables[@]}; i+=2)); do
+
         var="${variables[$i]}"
         prompt="${variables[$((i+1))]}"
 
-        # Si la variable existe déjà dans le fichier .env, on utilise sa valeur comme valeur par défaut
-        if grep -q "^$var=" "$local_env_file"; then
-            default=$(grep --only-matching --perl-regexp "^$var=\K.*" "$local_env_file")
-            value=$(prompt_for_value "$prompt" "$default")
+        # On utilise sa valeur actuelle comme valeur par défaut
+        default=$(grep --only-matching --perl-regexp "^$var=\K.*" "$env_file")
+        value=$(prompt_for_value "$prompt" "$default")
 
-            # Puis on remplace sa valeur si elle a été changée
-            if [[ "$value" != "$default" ]]; then
-                sed --in-place "s/^$var=.*/$var=$value/g" "$local_env_file"
-            fi
-
-        # Sinon, on cherche la valeur par défaut dans le fichier de configuration par défaut
-        else
-            default=$(grep --only-matching --perl-regexp "^$var=\K.*" "$default_env_file")
-            value=$(prompt_for_value "$prompt" "$default")
-            # Puis on l'ajoute à la fin du fichier
-            echo "$var=$value" >> "$local_env_file"
+        # Puis on remplace sa valeur si elle a été changée
+        if [[ "$value" != "$default" ]]; then
+            sed --in-place "s/^$var=.*/$var=$value/g" "$env_file"
         fi
+
     done
 
 } || {
-    echo -e "\n\033[0;31mUne erreur est survenue pendant la configuration du fichier $local_env_file.\033[0m\n"
+    echo -e "\n\033[0;31mUne erreur est survenue pendant la configuration du fichier d'environnement.\033[0m\n"
     exit 1
 }
 
-echo -e "\n\033[0;32mLe fichier $local_env_file a été configuré avec succès.\033[0m\n"
+echo -e "\n\033[0;32mLe fichier d'environnement a été configuré avec succès.\033[0m\n"
