@@ -26,6 +26,8 @@ variables=(
     "DB_USER_PASSWD"        "Mot de passe utilisateur de la base de données"
 )
 
+touch $local_env_file
+
 echo -e "\nConfiguration du fichier $local_env_file.\n"
 echo -e "Faites <entrer> pour garder la valeur entre crochet.\n"
 
