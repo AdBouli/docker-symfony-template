@@ -48,7 +48,6 @@ RUN apt-get update && apt-get -y upgrade \
     && echo 'short_open_tag = Off' > /usr/local/etc/php/conf.d/php-short-open-tag-off.ini \
     && curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash \
     && apt-get -y install symfony-cli \
-    # && apt-get -y install nodejs npm \
     && apt-get clean
 
 # Configuration utilisateur, groupe et répertoire

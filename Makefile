@@ -16,7 +16,7 @@
 .PHONY        : install build full_build up down ls ps top log \
 				app_sh app_exec db_sh db_exec db_log db_backup db_restore \
 				sf_init sf_start sf_stop sf_logs sf_dump sf_to_dev sf_to_prod sf_db_cfg sf_db_migrate \
-				sf_bs_sass_cfg sf_compile_assets sf_dbg_assets sf_dbg_router sf_controller sf_entity
+				sf_sass_cfg sf_compile_assets sf_dbg_assets sf_dbg_router sf_controller sf_entity
 ENV_FILES     = .env .env.local
 -include $(ENV_FILES)
 
@@ -45,7 +45,7 @@ help: ## Affiche ce message d'aide
 config:
 	@bash $(BINARIES_DIR)/config.sh
 
-install: build up sf_init sf_db_cfg sf_bs_sass_cfg ## Construit les images Docker, installe et configure Symfony avec Sass et Bootstrap
+install: build up sf_init sf_db_cfg sf_sass_cfg ## Construit les images Docker, installe et configure Symfony avec Sass et Bootstrap
 
 build:	## Construit les images des services [srv='...']
 	@$(eval srv ?=)
@@ -103,11 +103,11 @@ db_log: ## Affiche le flux des logs SQL de la base de données
 	@$(DB_CONT) tail --follow /var/lib/mysql/$(DB_HOSTNAME).log
 
 db_backup: ## Lance une sauvegarde de la base de données [tag='...']
-	@$(eval tag ?= null)
+	@$(eval tag ?= "null")
 	@$(eval backup_filename ?= $(PROJECT_NAME)-backup-$(shell date +"%Y%m%d-%H%M%S"))
 	@$(DB_CONT) bash -c "mariadb-dump --user=$(DB_USERNAME) --password=$(DB_USER_PASSWD) \
 	--add-drop-table $(DB_DATABASE_NAME) > $(DB_BACKUP_DIR)/$(backup_filename).sql"
-	@if [ $(tag) != null ]; then \
+	@if [ $(tag) != "null" ]; then \
 		mv $(BACKUP_DIR)/$(backup_filename).sql $(BACKUP_DIR)/$(backup_filename)-$(tag).sql; \
 	fi
 
@@ -124,7 +124,7 @@ db_restore: ## Lance une restauration de la base de données : backup=YYYYmmdd-H
 			$(DB_CONT) bash -c 'exec mariadb --user=$(DB_USERNAME) --password=$(DB_USER_PASSWD) \
 			$(DB_DATABASE_NAME) < $(DB_BACKUP_DIR)/$(backup_filename).sql'; \
 		else \
-			echo "\n\033[0;31mLe backup $(backup) n'existe pas.\033[0m\n"; \
+			echo "\n\033[0;31mLe backup '$(backup)' n'existe pas.\033[0m\n"; \
 		fi \
 	fi
 
@@ -166,7 +166,7 @@ sf_db_migrate: ## Créé et effectue une migration de la dase de données
 	@$(CONSOLE) make:migration
 	@$(CONSOLE) doctrine:migrations:migrate
 
-sf_bs_sass_cfg: ## Installe et configure Sass avec Boostrap à l'application
+sf_sass_cfg: ## Installe et configure Sass avec Boostrap à l'application
 	@$(SYMFONY) server:stop
 	@$(CONSOLE) importmap:require bootstrap@^$(APP_BOOTSTRAP_VERSION)
 	@sed --in-place "/app.css/a import\ 'bootstrap';" $(APP_DIR)/assets/app.js
@@ -181,6 +181,7 @@ sf_bs_sass_cfg: ## Installe et configure Sass avec Boostrap à l'application
 	@cp --force $(RESOURCES_DIR)/html/index.html.twig $(APP_DIR)/templates/bootstrap_test/index.html.twig
 	@cp --force $(RESOURCES_DIR)/config/asset_mapper.yaml $(APP_DIR)/config/packages/asset_mapper.yaml
 	@cp --force $(RESOURCES_DIR)/config/.symfony.local.yaml $(APP_DIR)/.symfony.local.yaml
+	@$(CONSOLE) sass:build
 	@$(SYMFONY) server:start --daemon --no-tls --port="$(APP_PORT_NUMBER)"
 	@echo "\n\033[1;3;35m-> Page de test accessible localement via : \
 	http://$$(hostname -I | cut -f1 -d ' '):$(LOCAL_APP_PORT_NUMBER)/bootstrap/test\033[0m\n"
@@ -207,10 +208,14 @@ sf_entity: ## Créé ou modifie une entité Symfony [name='...']
 ##
 
 git_clone: ## Clone un dépot git dans le répertoire applicatif (url='...')
-	@$(eval url ?= )
-	@rm --force $(APP_DIR)/.gitkeep
-	@git clone $(url) $(APP_DIR)/
-	@touch $(APP_DIR)/.gitkeep
+	@$(eval url ?= "null")
+	@if [ $(url) = "null" ]; then \
+		echo "\n\033[0;31mVeuillez renseigner un dépot (ex: url=git@github.com:$(PROJECT_USERNAME)/example.git)\033[0m\n"; \
+	else \
+		rm --force $(APP_DIR)/.gitkeep; \
+		git clone $(url) $(APP_DIR)/.; \
+		touch $(APP_DIR)/.gitkeep; \
+	fi
 
 git_status: ## Affiche l'état du dépot local
 	@cd $(APP_DIR)/ && git status

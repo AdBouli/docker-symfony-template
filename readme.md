@@ -1,11 +1,10 @@
 <!-- @file readme.md -->
 <!-- @author Adrien Boulineau <adbouli@vivaldi.net> -->
 
-
 # Modèle d'application Symfony avec Docker
 
 ## Prérequis
-make, docker-compose, grep, sed, git.
+bash, make, docker-compose, grep, sed, git.
 
 ## Configuration
 ```sh
