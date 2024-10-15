@@ -3,8 +3,9 @@
 # @file config.sh
 # @author Adrien Boulineau <adbouli@vivaldi.net>
 
-# Nom du fichier d'environnement
+# Nom des fichiers d'environnement
 env_file=".env"
+default_env_file=".env.default"
 
 # Fonction pour demander une valeur à l'utilisateur
 function prompt_for_value {
@@ -25,10 +26,17 @@ variables=(
     "DB_USER_PASSWD"        "Mot de passe utilisateur de la base de données"
 )
 
-echo -e "\nConfiguration du fichier d'environnement.\n"
-echo -e "Faites <entrer> pour garder la valeur entre crochet.\n"
-
 {
+
+    ## Si le fichier d'environnement n'existe pas, on le créer depuis celui par défaut
+    if [ ! -f $env_file ]; then
+        cp $default_env_file $env_file
+    fi
+
+    ## Messages
+    echo -e "\nConfiguration du fichier d'environnement.\n"
+    echo -e "Faites <entrer> pour garder la valeur entre crochet.\n"
+
     # Boucle pour chaque variable à configurer
     for ((i=0; i<${#variables[@]}; i+=2)); do
 

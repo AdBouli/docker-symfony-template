@@ -13,10 +13,11 @@
 
 # Généralités
 .DEFAULT_GOAL = help
-.PHONY        : install build full_build up down ls ps top log \
+.PHONY        : help config install build full_build up down ls ps top log \
 				app_sh app_exec db_sh db_exec db_log db_backup db_restore \
 				sf_init sf_start sf_stop sf_logs sf_dump sf_to_dev sf_to_prod sf_db_cfg sf_db_migrate \
-				sf_sass_cfg sf_compile_assets sf_dbg_assets sf_dbg_router sf_controller sf_entity
+				sf_sass_cfg sf_compile_assets sf_dbg_assets sf_dbg_router sf_controller sf_entity \
+				git_clone git_status git_commit git_pull git_push
 ENV_FILE = .env
 -include $(ENV_FILE)
 
@@ -42,7 +43,7 @@ help: ## Affiche ce message d'aide
 ## *** Général *** ------------------------------ *
 ##
 
-config:
+config: ## Lance l'assistant de configuration de projet
 	@bash $(BINARIES_DIR)/config.sh
 
 install: build up sf_init sf_db_cfg sf_sass_cfg ## Construit les images Docker, installe et configure Symfony avec Sass et Bootstrap
