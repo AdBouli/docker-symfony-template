@@ -183,7 +183,7 @@ sf_sass_cfg: ## Installe et configure Sass avec Boostrap à l'application
 	@cp --force $(RESOURCES_DIR)/config/asset_mapper.yaml $(APP_DIR)/config/packages/asset_mapper.yaml
 	@cp --force $(RESOURCES_DIR)/config/.symfony.local.yaml $(APP_DIR)/.symfony.local.yaml
 	@$(CONSOLE) sass:build
-	@$(SYMFONY) server:start --daemon --no-tls --port="$(APP_PORT_NUMBER)"
+	@$(SYMFONY) server:start --daemon --no-tls --listen-ip="$(APP_HOSTNAME)" --port="$(APP_PORT_NUMBER)"
 	@echo "\n\033[1;3;35m-> Page de test accessible localement via : \
 	http://$$(hostname -I | cut -f1 -d ' '):$(LOCAL_APP_PORT_NUMBER)/bootstrap/test\033[0m\n"
 
