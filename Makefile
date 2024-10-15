@@ -138,7 +138,7 @@ sf_init: ## Initialise le projet Symfony
 	@touch $(APP_DIR)/.gitkeep
 
 sf_start: ## Lance le serveur web local de Symfony
-	@$(SYMFONY) server:start --daemon --no-tls --port="$(APP_PORT_NUMBER)"
+	@$(SYMFONY) server:start --daemon --no-tls --listen-ip="$(APP_HOSTNAME)" --port="$(APP_PORT_NUMBER)"
 	@echo "\n\033[1;3;35m-> Accessible localement via : \
 	http://$$(hostname -I | cut -f1 -d ' '):$(LOCAL_APP_PORT_NUMBER)\033[0m\n"
 
