@@ -161,7 +161,7 @@ sf_to_prod: sf_compile_assets ## Configure l'application en environnement de pro
 
 sf_db_cfg: ## Configure Symfony pour l'accès à la base de données de l'application
 	@echo 'DATABASE_URL="mysql://$(DB_USERNAME):$(DB_USER_PASSWD)@$(DB_HOSTNAME):$(DB_PORT_NUMBER)/$(DB_DATABASE_NAME)'\
-	'?serverVersion=$(DB_MARIADB_VERSION)-MariaDB&charset=$(DB_MARIADB_CHARSET)"' > $(APP_DIR)/.env.db.local
+	'?serverVersion=$(DB_MARIADB_VERSION)-MariaDB&charset=$(DB_MARIADB_CHARSET)"' >> $(APP_DIR)/.env.local
 
 sf_db_migrate: ## Créé et effectue une migration de la dase de données
 	@$(CONSOLE) make:migration
