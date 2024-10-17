@@ -135,7 +135,7 @@ db_restore: ## Lance une restauration de la base de données : backup=YYYYmmdd-H
 
 sf_init: ## Initialise le projet Symfony
 	@rm --force $(APP_DIR)/.gitkeep
-	@$(SYMFONY) new $(PROJECT_NAME) --webapp --version="6.4.*" --php="${APP_PHP_VERSION}" --no-git --dir="."
+	@$(SYMFONY) new $(PROJECT_NAME) --webapp --version="${APP_SYMFONY_VERSION}" --php="${APP_PHP_VERSION}" --no-git --dir="."
 	@touch $(APP_DIR)/.gitkeep
 
 sf_start: ## Lance le serveur web local de Symfony
